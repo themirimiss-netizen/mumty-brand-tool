@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brand Discovery – Dein Markenkern</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap');
+
+:root {
+  --terra:#e97d69; --sage:#5e8478; --brown:#9f634e;
+  --cream:#fdf6f0; --dark:#2a1f1a; --mid:#6b5047;
+  --lsage:#e8f0ed; --lterra:#fdecea;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;background:var(--cream);color:var(--dark);min-height:100vh;overflow-x:hidden;}
+
+.prog{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--terra),var(--sage));transition:width .5s;z-index:100;}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(70px);background:var(--dark);color:#fff;padding:11px 22px;border-radius:50px;font-size:13px;font-weight:500;transition:transform .3s;z-index:200;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+
+.screen{display:none;min-height:100vh;padding:80px 24px 52px;max-width:680px;margin:0 auto;animation:fu .45s ease forwards;}
+.screen.active{display:flex;flex-direction:column;justify-content:center;}
+@keyframes fu{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+
+.ey{font-size:11px;letter-spacing:3px;text-transform:uppercase;font-weight:600;margin-bottom:14px;}
+.ey-t{color:var(--terra);} .ey-s{color:var(--sage);} .ey-m{color:var(--mid);}
+.disp{font-family:'Playfair Display',serif;font-size:clamp(28px,7vw,48px);line-height:1.15;color:var(--dark);margin-bottom:20px;}
+.disp em{font-style:italic;color:var(--terra);}
+.qn{font-family:'Playfair Display',serif;font-size:clamp(20px,5vw,30px);line-height:1.3;color:var(--dark);margin-bottom:10px;}
+.hint{font-size:14px;color:var(--mid);line-height:1.65;margin-bottom:26px;}
+.body-t{font-size:15px;line-height:1.75;color:var(--mid);max-width:520px;margin-bottom:34px;}
+
+.btn{display:inline-flex;align-items:center;gap:10px;background:var(--terra);color:#fff;border:none;border-radius:50px;padding:15px 30px;font-family:'Inter',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:all .2s;}
+.btn:hover{background:#d96a57;transform:translateY(-1px);box-shadow:0 8px 24px rgba(233,125,105,.3);}
+.btn:disabled{background:#ccc;cursor:not-allowed;transform:none;box-shadow:none;}
+.btn-ol{background:transparent;color:var(--mid);border:1.5px solid #e0d4ce;}
+.btn-ol:hover{background:#fff;color:var(--dark);box-shadow:0 4px 12px rgba(0,0,0,.07);}
+.btn-row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;}
+.back{display:inline-flex;align-items:center;gap:6px;color:var(--mid);font-size:13px;cursor:pointer;margin-bottom:26px;opacity:.65;transition:opacity .2s;background:none;border:none;font-family:'Inter',sans-serif;}
+.back:hover{opacity:1;}
+
+textarea,input[type=text]{width:100%;background:#fff;border:1.5px solid #e8ddd8;border-radius:14px;padding:16px 20px;font-family:'Inter',sans-serif;font-size:15px;color:var(--dark);outline:none;transition:border-color .2s;line-height:1.6;}
+textarea{resize:vertical;min-height:108px;}
+textarea:focus,input[type=text]:focus{border-color:var(--terra);box-shadow:0 0 0 3px rgba(233,125,105,.1);}
+.iw{margin-bottom:26px;} .iw input{margin-bottom:10px;}
+
+.choices{display:grid;gap:10px;margin-bottom:26px;}
+.cc{background:#fff;border:1.5px solid #e8ddd8;border-radius:14px;padding:15px 18px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:12px;}
+.cc:hover{border-color:var(--terra);background:var(--lterra);}
+.cc.on{border-color:var(--terra);background:var(--lterra);box-shadow:0 0 0 3px rgba(233,125,105,.12);}
+.cc.on .chk{background:var(--terra);border-color:var(--terra);color:#fff;}
+.chk{width:22px;height:22px;border-radius:50%;border:1.5px solid #ccc;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;transition:all .2s;}
+.choices.multi .chk{border-radius:6px;}
+.cl{font-size:15px;font-weight:500;color:var(--dark);flex:1;}
+.cs{font-size:12px;color:var(--mid);margin-top:2px;}
+.ce{font-size:20px;}
+
+/* SKIN SWATCHES */
+.sw-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:26px;}
+.sw{width:48px;height:48px;border-radius:50%;border:3px solid transparent;cursor:pointer;transition:all .2s;}
+.sw.on{border-color:var(--dark);transform:scale(1.12);box-shadow:0 0 0 2px #fff,0 0 0 4px var(--terra);}
+
+/* PHOTO UPLOAD */
+.upload-area{border:2px dashed #e0d4ce;border-radius:18px;padding:32px 20px;text-align:center;cursor:pointer;transition:all .2s;background:#fff;margin-bottom:24px;position:relative;}
+.upload-area:hover{border-color:var(--terra);background:var(--lterra);}
+.upload-area.has-img{border-style:solid;border-color:var(--sage);}
+.upload-icon{font-size:36px;margin-bottom:10px;}
+.upload-title{font-size:15px;font-weight:600;color:var(--dark);margin-bottom:4px;}
+.upload-sub{font-size:13px;color:var(--mid);}
+.upload-preview{width:100%;max-height:200px;object-fit:cover;border-radius:12px;margin-top:14px;display:none;}
+#file-input{display:none;}
+
+/* LOADING */
+.spin{width:58px;height:58px;border-radius:50%;border:3px solid var(--lterra);border-top-color:var(--terra);border-right-color:var(--sage);animation:sp 1.1s linear infinite;margin:0 auto 26px;}
+@keyframes sp{to{transform:rotate(360deg)}}
+.dots{display:inline-flex;gap:6px;margin-top:18px;}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--terra);animation:pu 1.4s ease-in-out infinite;}
+.dot:nth-child(2){animation-delay:.2s;background:var(--sage);}
+.dot:nth-child(3){animation-delay:.4s;background:var(--brown);}
+@keyframes pu{0%,80%,100%{opacity:.3;transform:scale(.8)}40%{opacity:1;transform:scale(1)}}
+
+/* RESULT BLOCKS */
+.rb{background:#fff;border-radius:20px;padding:26px 28px;margin-bottom:14px;border:1px solid #f0e8e4;position:relative;overflow:hidden;}
+.rb::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:linear-gradient(to bottom,var(--terra),var(--sage));border-radius:4px 0 0 4px;}
+.rb-dark{background:linear-gradient(135deg,#2a1f1a,#3d2820);border-radius:20px;padding:28px;margin-bottom:14px;}
+.rb-terra{background:var(--lterra);border-radius:20px;padding:26px 28px;margin-bottom:14px;}
+.rb-sage{background:var(--lsage);border-radius:20px;padding:26px 28px;margin-bottom:14px;}
+.bl{font-size:10px;letter-spacing:3px;text-transform:uppercase;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.bl-l{color:rgba(255,255,255,.5);} .bl-d{color:var(--mid);}
+.rt{font-size:15px;line-height:1.75;color:var(--dark);}
+.rt-l{font-family:'Playfair Display',serif;font-size:clamp(17px,4vw,22px);line-height:1.5;color:#fff;font-style:italic;}
+.rt-l em{color:var(--terra);font-style:normal;}
+
+/* PALETTE */
+.pal-row{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0;}
+.cc-chip{display:flex;flex-direction:column;align-items:center;gap:5px;}
+.csw{width:52px;height:52px;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.12);cursor:pointer;transition:transform .2s;}
+.csw:hover{transform:scale(1.08);}
+.chx{font-size:10px;font-weight:600;color:var(--mid);letter-spacing:.5px;font-family:monospace;}
+.cnm{font-size:11px;color:var(--mid);}
+
+/* FONT CARDS */
+.frow{display:flex;gap:12px;flex-wrap:wrap;margin:12px 0;}
+.fc{background:#fff;border-radius:12px;padding:15px 17px;border:1px solid #f0e8e4;flex:1;min-width:130px;}
+.fr{font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--mid);margin-bottom:5px;}
+.fn{font-size:14px;font-weight:600;color:var(--dark);margin-bottom:4px;}
+.fs{font-size:22px;color:var(--terra);}
+
+/* IDEA LIST */
+.idea-list{display:grid;gap:8px;}
+.idea{background:var(--lsage);border-radius:10px;padding:11px 15px;font-size:14px;color:#2a3d38;font-weight:500;display:flex;align-items:flex-start;gap:10px;}
+.ia{color:var(--terra);flex-shrink:0;}
+
+/* DIVIDER */
+.div{text-align:center;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--mid);opacity:.45;margin:18px 0 12px;display:flex;align-items:center;gap:12px;}
+.div::before,.div::after{content:'';flex:1;height:1px;background:#e8ddd8;}
+
+/* COPY BTN */
+.cpb{background:none;border:none;font-size:12px;color:var(--mid);cursor:pointer;font-family:'Inter',sans-serif;margin-top:11px;display:inline-flex;align-items:center;gap:4px;transition:color .2s;}
+.cpb:hover{color:var(--terra);}
+
+/* ═══════ TEMPLATES ═══════ */
+.tpl-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:14px 0;}
+@media(max-width:500px){.tpl-grid{grid-template-columns:1fr;}}
+.tpl-card{border-radius:16px;overflow:hidden;cursor:pointer;transition:transform .2s,box-shadow .2s;position:relative;}
+.tpl-card:hover{transform:translateY(-3px);box-shadow:0 12px 30px rgba(0,0,0,.12);}
+.tpl-card .tpl-label{position:absolute;bottom:0;left:0;right:0;padding:10px 14px;font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;}
+.tpl-canvas{display:block;width:100%;height:auto;}
+.tpl-hint{font-size:12px;color:var(--mid);margin-top:10px;line-height:1.6;}
+.canva-btn{display:inline-flex;align-items:center;gap:8px;background:#7D2AE8;color:#fff;border:none;border-radius:50px;padding:12px 22px;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;margin-top:14px;text-decoration:none;}
+.canva-btn:hover{background:#6a20d0;}
+
+/* STYLE SECTION */
+.sb-badge{display:inline-flex;align-items:center;gap:8px;border-radius:50px;padding:8px 18px;font-size:13px;font-weight:600;margin-bottom:14px;}
+
+/* OUTFIT SWATCHES */
+.outfit-row{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0;}
+.outfit-chip{display:flex;flex-direction:column;align-items:center;gap:6px;}
+.outfit-swatch{width:60px;height:80px;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,.1);}
+.outfit-name{font-size:11px;color:var(--mid);text-align:center;}
+.avoid-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;}
+.avoid-chip{display:flex;flex-direction:column;align-items:center;gap:5px;opacity:.55;}
+.avoid-chip .outfit-swatch{position:relative;}
+.avoid-label{font-size:10px;color:var(--mid);text-align:center;}
+
+/* PHOTO ANALYSIS RESULT */
+.photo-result{background:#fff;border-radius:14px;padding:18px;border:1px solid #e8ddd8;margin-top:12px;}
+.photo-thumb{width:72px;height:72px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid var(--terra);}
+
+.cta-sec{text-align:center;padding:30px 0 52px;}
+.cta-link{display:inline-block;margin-top:14px;font-size:13px;color:var(--sage);font-weight:600;text-decoration:none;border-bottom:1.5px solid var(--sage);padding-bottom:2px;transition:opacity .2s;}
+.cta-link:hover{opacity:.7;}
+
+@media(max-width:480px){.btn-row{flex-direction:column;} .btn{width:100%;justify-content:center;} .pal-row{gap:8px;} .frow{flex-direction:column;}}
+</style>
+</head>
+<body>
+<div class="prog" id="prog" style="width:0%"></div>
+<div class="toast" id="toast">✓ Kopiert!</div>
+
+<!-- ░░░ SCREEN 0: INTRO ░░░ -->
+<div class="screen active" id="s0">
+  <div style="text-align:center;margin-bottom:8px;">
+    <div class="ey ey-m" style="font-size:10px;letter-spacing:4px;">MUMTY · Brand Discovery</div>
+  </div>
+  <div style="margin-top:32px;">
+    <div class="ey ey-t">Dein persönlicher Markenkompass</div>
+    <h1 class="disp">Wer bist du –<br>und warum soll<br>man <em>genau dir</em><br>folgen?</h1>
+    <p class="body-t">In 9 Schritten erschaffen wir deinen vollständigen Personal-Brand-Kern: Positionierung, Brand Statement, Farbpalette, Schriftarten, 5 Templates, Content-Ideen – und eine persönliche Stilberatung mit Foto-Analyse.</p>
+    <div class="btn-row">
+      <button class="btn" onclick="go(1)">Starten ✦</button>
+    </div>
+    <p style="margin-top:16px;font-size:12px;color:var(--mid);">Ca. 10 Minuten · KI-generierte Ergebnisse am Ende</p>
+  </div>
+</div>
+
+<!-- ░░░ SCREEN 1: NAME ░░░ -->
+<div class="screen" id="s1">
+  <button class="back" onclick="go(0)">← Zurück</button>
+  <div class="ey ey-s">Schritt 1 von 9 · Fundament</div>
+  <h2 class="qn">Wie heißt du, und was machst du?</h2>
+  <p class="hint">Dein Name und deine Rolle – so wie du sie anderen erklärst.</p>
+  <div class="iw">
+    <input type="text" id="q-name" placeholder="Vorname (z. B. Miri)">
+    <input type="text" id="q-role" placeholder="z. B. Business-Coach für Frauen, Heilpraktikerin …">
+  </div>
+  <div class="btn-row"><button class="btn" onclick="s1next()">Weiter →</button></div>
+</div>
+
+<!-- ░░░ SCREEN 2 ░░░ -->
+<div class="screen" id="s2">
+  <button class="back" onclick="go(1)">← Zurück</button>
+  <div class="ey ey-s">Schritt 2 von 9 · Deine Menschen</div>
+  <h2 class="qn">Für wen bist du da?</h2>
+  <p class="hint">Deine Wunschkundin / dein Wunschkunde – wer sie sind und was sie bewegt.</p>
+  <div class="iw"><textarea id="q-audience" placeholder="z. B. Frauen zwischen 35 und 55, die nach der Familienphase wieder durchstarten wollen …"></textarea></div>
+  <div class="btn-row"><button class="btn" onclick="sNext('q-audience',3)">Weiter →</button></div>
+</div>
+
+<!-- ░░░ SCREEN 3 ░░░ -->
+<div class="screen" id="s3">
+  <button class="back" onclick="go(2)">← Zurück</button>
+  <div class="ey ey-s">Schritt 3 von 9 · Dein Versprechen</div>
+  <h2 class="qn">Was veränderst du im Leben deiner Kunden?</h2>
+  <p class="hint">Vorher → Nachher. Die größte Veränderung, die du möglich machst.</p>
+  <div class="iw"><textarea id="q-transformation" placeholder="z. B. Vorher: Viel Wissen, kein Einkommen. Nachher: Klares Angebot, verlässliches Geld …"></textarea></div>
+  <div class="btn-row"><button class="btn" onclick="sNext('q-transformation',4)">Weiter →</button></div>
+</div>
+
+<!-- ░░░ SCREEN 4 ░░░ -->
+<div class="screen" id="s4">
+  <button class="back" onclick="go(3)">← Zurück</button>
+  <div class="ey ey-s">Schritt 4 von 9 · Deine Energie</div>
+  <h2 class="qn">Wie würden andere dich beschreiben?</h2>
+  <p class="hint">Wähle alle Eigenschaften, die zu dir passen.</p>
+  <div class="choices multi" id="g4">
+    <div class="cc" data-v="direkt und ehrlich" onclick="tog(this)"><div class="chk">✓</div><span class="ce">⚡</span><div><div class="cl">Direkt &amp; ehrlich</div><div class="cs">Du sagst, was du meinst</div></div></div>
+    <div class="cc" data-v="warm und nahbar" onclick="tog(this)"><div class="chk">✓</div><span class="ce">🤍</span><div><div class="cl">Warm &amp; nahbar</div><div class="cs">Menschen fühlen sich sofort sicher</div></div></div>
+    <div class="cc" data-v="inspirierend und visionär" onclick="tog(this)"><div class="chk">✓</div><span class="ce">✨</span><div><div class="cl">Inspirierend &amp; visionär</div><div class="cs">Du zeigst, was möglich ist</div></div></div>
+    <div class="cc" data-v="pragmatisch und lösungsorientiert" onclick="tog(this)"><div class="chk">✓</div><span class="ce">🔧</span><div><div class="cl">Pragmatisch &amp; lösungsorientiert</div><div class="cs">Weniger Theorie, mehr Ergebnis</div></div></div>
+    <div class="cc" data-v="mutig und unbequem" onclick="tog(this)"><div class="chk">✓</div><span class="ce">🔥</span><div><div class="cl">Mutig &amp; unbequem</div><div class="cs">Du triffst Nerven, die andere meiden</div></div></div>
+    <div class="cc" data-v="leicht und spielerisch" onclick="tog(this)"><div class="chk">✓</div><span class="ce">🌿</span><div><div class="cl">Leicht &amp; spielerisch</div><div class="cs">Business muss keine Qual sein</div></div></div>
+  </div>
+  <div class="btn-row"><button class="btn" onclick="s4next()">Weiter →</button></div>
+</div>
+
+<!-- ░░░ SCREEN 5 ░░░ -->
+<div class="screen" id="s5">
+  <button class="back" onclick="go(4)">← Zurück</button>
+  <div class="ey ey-s">Schritt 5 von 9 · Deine Geschichte</div>
+  <h2 class="qn">Was hat dich zu dem gemacht, das du heute bist?</h2>
+  <p class="hint">Der Wendepunkt, das Erlebnis, das dich wirklich antreibt.</p>
+  <div class="iw"><textarea id="q-story" placeholder="z. B. Ich habe selbst jahrelang mein Wissen verschenkt …"></textarea><div style="font-size:12px;color:var(--mid);margin-top:6px;">Das Echte ist dein stärkstes Asset.</div></div>
+  <div class="btn-row"><button class="btn" onclick="sNext('q-story',6)">Weiter →</button></div>
+</div>
+
+<!-- ░░░ SCREEN 6 ░░░ -->
+<div class="screen" id="s6">
+  <button class="back" onclick="go(5)">← Zurück</button>
+  <div class="ey ey-s">Schritt 6 von 9 · Deine Ästhetik</div>
+  <h2 class="qn">Welche Bildwelt beschreibt deine Marke?</h2>
+  <p class="hint">Die Richtung, bei der du denkst: „Ja, genau so soll es sich anfühlen."</p>
+  <div class="choices" id="g6">
+    <div class="cc" data-v="warm-earthy" onclick="sin(this,'g6')"><div class="chk">✓</div><span class="ce">🌾</span><div><div class="cl">Warm &amp; geerdet</div><div class="cs">Terracotta, Leinen, Naturmaterialien</div></div></div>
+    <div class="cc" data-v="clean-modern" onclick="sin(this,'g6')"><div class="chk">✓</div><span class="ce">🤍</span><div><div class="cl">Clean &amp; modern</div><div class="cs">Weiß, Hellgrau, klare Linien</div></div></div>
+    <div class="cc" data-v="bold-contrast" onclick="sin(this,'g6')"><div class="chk">✓</div><span class="ce">🖤</span><div><div class="cl">Bold &amp; kontrastreich</div><div class="cs">Dunkel, kraftvoll, mutig</div></div></div>
+    <div class="cc" data-v="soft-feminine" onclick="sin(this,'g6')"><div class="chk">✓</div><span class="ce">🌸</span><div><div class="cl">Sanft &amp; feminin</div><div class="cs">Rosé, Sage, Pastelltöne</div></div></div>
+    <div class="cc" data-v="sage-nature" onclick="sin(this,'g6')"><div class="chk">✓</div><span class="ce">🌿</span><div><div class="cl">Natürlich &amp; nachhaltig</div><div class="cs">Grün, Khaki, organische Formen</div></div></div>
+  </div>
+  <div class="btn-row"><button class="btn" onclick="s6next()">Weiter →</button></div>
+</div>
+
+<!-- ░░░ SCREEN 7 ░░░ -->
+<div class="screen" id="s7">
+  <button class="back" onclick="go(6)">← Zurück</button>
+  <div class="ey ey-s">Schritt 7 von 9 · Alleinstellungsmerkmal</div>
+  <h2 class="qn">Was kannst nur du – und niemand sonst?</h2>
+  <p class="hint">Die Methode, das Talent, die Kombination, die es so nur bei dir gibt.</p>
+  <div class="iw"><textarea id="q-unique" placeholder="z. B. Ich verbinde systemisches Coaching mit echter Erfahrung aus dem öffentlichen Dienst …"></textarea></div>
+  <div class="btn-row"><button class="btn" onclick="sNext('q-unique',8)">Weiter →</button></div>
+</div>
+
+<!-- ░░░ SCREEN 8: FOTO-UPLOAD ░░░ -->
+<div class="screen" id="s8">
+  <button class="back" onclick="go(7)">← Zurück</button>
+  <div class="ey ey-t">Schritt 8 von 9 · Exkurs: Persönliche Stilberatung</div>
+  <h2 class="qn">Lade ein Foto von dir hoch</h2>
+  <p class="hint">Die KI analysiert deinen Farbtyp automatisch – Hautton, Haarfarbe, Augenfarbe – und empfiehlt die Kleidungsfarben, die dich und dein Business optimal repräsentieren.</p>
+  <div class="upload-area" id="upload-area" onclick="triggerUpload(event)">
+    <div class="upload-icon">📸</div>
+    <div class="upload-title">Foto auswählen oder ablegen</div>
+    <div class="upload-sub">JPG, PNG · max. 5 MB · nur du siehst es</div>
+    <img class="upload-preview" id="upload-preview" alt="Vorschau">
+  </div>
+  <input type="file" id="file-input" accept="image/jpeg,image/png,image/webp" onchange="onFile(event)">
+  <div class="btn-row">
+    <button class="btn" id="btn-analyze" onclick="generate()" disabled>✦ Brand-Kern erstellen</button>
+    <button class="btn btn-ol" onclick="skipPhoto()">Ohne Foto weiter</button>
+  </div>
+  <p style="font-size:12px;color:var(--mid);margin-top:12px;">Dein Foto wird nur für diese Analyse verwendet und nicht gespeichert.</p>
+</div>
+
+<!-- ░░░ LOADING ░░░ -->
+<div class="screen" id="s-load">
+  <div style="text-align:center;">
+    <div class="spin"></div>
+    <h2 class="qn" style="text-align:center;margin-bottom:10px;">Dein Markenkern entsteht …</h2>
+    <p style="font-size:14px;color:var(--mid);text-align:center;line-height:1.6;">Wir analysieren deine Antworten und<br>destillieren das Wesentliche.</p>
+    <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+    <p style="font-size:13px;color:var(--mid);margin-top:14px;min-height:20px;" id="load-msg"></p>
+  </div>
+</div>
+
+<!-- ░░░ RESULTS ░░░ -->
+<div class="screen" id="s-res">
+
+  <div style="margin-bottom:30px;">
+    <div class="ey ey-t">Dein Brand Discovery Ergebnis</div>
+    <h2 class="disp" style="margin-bottom:6px;">Willkommen,<br><em id="r-name">–</em> ✦</h2>
+    <p style="font-size:14px;color:var(--mid);">KI-generiert auf Basis deiner Antworten.</p>
+  </div>
+
+  <!-- POSITIONIERUNG -->
+  <div class="rb-dark">
+    <div class="bl bl-l"><span>💎</span> Deine Positionierung</div>
+    <p class="rt-l" id="r-pos">…</p>
+  </div>
+
+  <!-- STATEMENT -->
+  <div class="rb">
+    <div class="bl bl-d"><span>🎯</span> Dein Brand Statement</div>
+    <p class="rt" id="r-stmt">…</p>
+    <button class="cpb" onclick="copyEl('r-stmt')">📋 Kopieren</button>
+  </div>
+
+  <div class="div">Visueller Brand</div>
+
+  <!-- PALETTE -->
+  <div class="rb">
+    <div class="bl bl-d"><span>🎨</span> Deine Farbpalette</div>
+    <div class="pal-row" id="r-pal"></div>
+    <p style="font-size:13px;color:var(--mid);margin-top:8px;" id="r-pal-desc"></p>
+  </div>
+
+  <!-- FONTS -->
+  <div class="rb">
+    <div class="bl bl-d"><span>✍️</span> Deine Schriftarten</div>
+    <div class="frow" id="r-fonts"></div>
+    <p style="font-size:13px;color:var(--mid);margin-top:8px;" id="r-font-desc"></p>
+  </div>
+
+  <!-- LOGO -->
+  <div class="rb-terra">
+    <div class="bl bl-d"><span>✦</span> Logo-Konzept-Idee</div>
+    <div style="background:#fff;border-radius:14px;padding:22px;display:flex;align-items:center;justify-content:center;margin:12px 0;min-height:88px;">
+      <div id="r-logo" style="text-align:center;"></div>
+    </div>
+    <p style="font-size:13px;color:var(--mid);" id="r-logo-desc"></p>
+  </div>
+
+  <div class="div">Templates</div>
+
+  <!-- TEMPLATES -->
+  <div class="rb">
+    <div class="bl bl-d"><span>🖼️</span> Deine 5 Brand-Templates</div>
+    <p style="font-size:13px;color:var(--mid);margin-bottom:14px;">Klicke auf ein Template, um den Canva-Hinweis zu sehen.</p>
+    <div class="tpl-grid" id="r-tpl"></div>
+    <div id="r-tpl-hint" class="tpl-hint" style="display:none;"></div>
+    <a class="canva-btn" href="https://www.canva.com/de_de/" target="_blank">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
+      In Canva öffnen &amp; anpassen
+    </a>
+  </div>
+
+  <div class="div">Content &amp; Stilberatung</div>
+
+  <!-- CONTENT -->
+  <div class="rb">
+    <div class="bl bl-d"><span>💡</span> Deine ersten 5 Content-Ideen</div>
+    <div class="idea-list" id="r-content"></div>
+  </div>
+
+  <!-- STILBERATUNG (foto oder manuell) -->
+  <div class="rb-sage" id="r-style-block" style="display:none;">
+    <div class="bl bl-d"><span>🪞</span> Persönliche Stilberatung</div>
+    <!-- Foto-Ergebnis falls vorhanden -->
+    <div id="r-photo-result" style="display:none;">
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;">
+        <img id="r-photo-thumb" class="photo-thumb" alt="Dein Foto">
+        <div>
+          <div style="font-size:13px;font-weight:600;color:var(--dark);" id="r-photo-detected">Erkannter Farbtyp …</div>
+          <div style="font-size:12px;color:var(--mid);margin-top:3px;" id="r-photo-sub"></div>
+        </div>
+      </div>
+    </div>
+    <div id="r-season-badge"></div>
+    <p class="rt" id="r-style-text" style="margin-bottom:16px;font-size:14px;"></p>
+
+    <p style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:2px;color:var(--mid);margin-bottom:8px;">Deine Outfit-Farben ✓</p>
+    <div class="outfit-row" id="r-outfit-yes"></div>
+
+    <p style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:2px;color:var(--mid);margin:14px 0 8px;">Lieber vermeiden ✗</p>
+    <div class="avoid-row" id="r-outfit-no"></div>
+
+    <p style="font-size:12px;color:var(--mid);margin-top:14px;line-height:1.7;" id="r-style-tip"></p>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-sec">
+    <p style="font-size:13px;color:var(--mid);margin-bottom:16px;">Möchtest du deine Positionierung noch tiefer ausarbeiten?</p>
+    <button class="btn" onclick="restart()">↺ Neu starten</button><br>
+    <a class="cta-link" href="https://bit.ly/mumty-warteliste" target="_blank">→ AlphaMUM Warteliste beitreten</a>
+  </div>
+
+</div><!-- /s-res -->
+
+<script>
+// ════════════════════════════════
+//  STATE
+// ════════════════════════════════
+const A = {};
+let photoB64 = null;
+
+// ════════════════════════════════
+//  NAV
+// ════════════════════════════════
+function go(n){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  // Map special names to actual IDs
+  const idMap = {'load':'s-load','res':'s-res'};
+  const id = idMap[n] || ('s'+n);
+  const el = document.getElementById(id);
+  if(!el){ console.error('Screen not found:', id); return; }
+  el.classList.add('active');
+  window.scrollTo(0,0);
+  const pct = n==='load'?92:n==='res'?100:Math.round((+n/9)*88);
+  document.getElementById('prog').style.width=pct+'%';
+}
+
+// ════════════════════════════════
+//  STEPS
+// ════════════════════════════════
+function s1next(){
+  const nm=document.getElementById('q-name').value.trim();
+  const rl=document.getElementById('q-role').value.trim();
+  if(!nm||!rl){alert('Bitte beides ausfüllen 🙏');return;}
+  A.name=nm;A.role=rl;go(2);
+}
+function sNext(id,next){
+  const v=document.getElementById(id).value.trim();
+  if(!v){alert('Bitte ausfüllen 🙏');return;}
+  A[id.replace('q-','')]=v;go(next);
+}
+function s4next(){
+  const sel=[...document.querySelectorAll('#g4 .cc.on')].map(c=>c.dataset.v);
+  if(!sel.length){alert('Wähle mindestens eine Eigenschaft 🙏');return;}
+  A.style=sel.join(', ');go(5);
+}
+function s6next(){
+  const sel=document.querySelector('#g6 .cc.on');
+  if(!sel){alert('Bitte eine Richtung wählen 🙏');return;}
+  A.aesthetic=sel.dataset.v;go(7);
+}
+function skipPhoto(){A.skin=null;photoB64=null;generate();}
+
+// ════════════════════════════════
+//  CHOICES
+// ════════════════════════════════
+function tog(el){el.classList.toggle('on');}
+function sin(el,gid){document.querySelectorAll('#'+gid+' .cc').forEach(c=>c.classList.remove('on'));el.classList.add('on');}
+
+// ════════════════════════════════
+//  FILE UPLOAD
+// ════════════════════════════════
+function triggerUpload(e){
+  // Prevent double-fire if click came from the hidden input itself
+  if(e && e.target && e.target.id==='file-input') return;
+  document.getElementById('file-input').click();
+}
+function onFile(e){
+  const f=e.target.files[0];
+  if(!f)return;
+  // Resize if large to stay under API limits
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    const img=new Image();
+    img.onload=()=>{
+      // Downsample to max 800px wide for API
+      const MAX=800;
+      let w=img.width, h=img.height;
+      if(w>MAX){h=Math.round(h*MAX/w);w=MAX;}
+      const cv=document.createElement('canvas');
+      cv.width=w; cv.height=h;
+      cv.getContext('2d').drawImage(img,0,0,w,h);
+      photoB64=cv.toDataURL('image/jpeg',0.85).split(',')[1];
+      // Update UI
+      const area=document.getElementById('upload-area');
+      area.classList.add('has-img');
+      const prev=document.getElementById('upload-preview');
+      prev.src=cv.toDataURL('image/jpeg',0.85);
+      prev.style.display='block';
+      area.querySelector('.upload-icon').textContent='✅';
+      area.querySelector('.upload-title').textContent='Foto bereit – jetzt Brand-Kern erstellen';
+      const btn=document.getElementById('btn-analyze');
+      btn.disabled=false;
+      btn.textContent='✦ Brand-Kern erstellen';
+    };
+    img.src=ev.target.result;
+  };
+  reader.readAsDataURL(f);
+}
+
+// ════════════════════════════════
+//  DATA
+// ════════════════════════════════
+const PALS={
+  'warm-earthy':  [{h:'#E97D69',n:'Terracotta'},{h:'#9F634E',n:'Braun'},{h:'#F5DDD5',n:'Leinen'},{h:'#5E8478',n:'Sage'},{h:'#2A1F1A',n:'Dunkel'}],
+  'clean-modern': [{h:'#1A1A2E',n:'Nacht'},{h:'#E8E8E0',n:'Hellgrau'},{h:'#F7F7F5',n:'Weiß'},{h:'#C9A96E',n:'Gold'},{h:'#6B7280',n:'Grau'}],
+  'bold-contrast':[{h:'#111111',n:'Schwarz'},{h:'#F5F5F0',n:'Cream'},{h:'#E84855',n:'Rot'},{h:'#FFD166',n:'Gelb'},{h:'#3D3D3D',n:'Dunkelgrau'}],
+  'soft-feminine':[{h:'#F2B5A0',n:'Rosé'},{h:'#D4A5A5',n:'Altrosa'},{h:'#FDF0EC',n:'Pfirsich'},{h:'#7B9E87',n:'Salbei'},{h:'#3D2B2B',n:'Dunkelbraun'}],
+  'sage-nature':  [{h:'#4A7C59',n:'Waldgrün'},{h:'#8FAF7E',n:'Hellgrün'},{h:'#C8D5B9',n:'Mintcream'},{h:'#8B6914',n:'Ocker'},{h:'#2C3E2D',n:'Dunkelgrün'}]
+};
+const FNTS={
+  'warm-earthy':  {d:'Playfair Display',b:'Lato'},
+  'clean-modern': {d:'Cormorant Garamond',b:'Inter'},
+  'bold-contrast':{d:'Bebas Neue',b:'Work Sans'},
+  'soft-feminine':{d:'Josefin Sans',b:'Nunito'},
+  'sage-nature':  {d:'Libre Baskerville',b:'Source Sans Pro'}
+};
+
+// Template definitions (drawn with SVG/Canvas per palette)
+const TPL_INFO=[
+  {id:'ig-post',  label:'Instagram Post 1:1',    w:300,h:300, platform:'Instagram'},
+  {id:'ig-story', label:'Instagram Story 9:16',  w:180,h:320, platform:'Instagram'},
+  {id:'li-banner',label:'LinkedIn Banner 3:1',   w:300,h:100, platform:'LinkedIn'},
+  {id:'li-card',  label:'LinkedIn Bio-Card',     w:300,h:170, platform:'LinkedIn'},
+  {id:'quote-post',label:'Zitat-Post 4:5',       w:240,h:300, platform:'Instagram / LinkedIn'}
+];
+const TPL_CANVA={
+  'ig-post':   'Instagram-Post erstellen: Canva → „Instagram Post" → Vorlage: Minimalistisch oder Typografie → Hintergrundfarbe: dein Primärton → Name in Display-Schrift groß, Claim in Body-Schrift klein.',
+  'ig-story':  'Instagram Story: Canva → „Instagram Story" → Hochformat 1080×1920 → Oben dein Name, mittig ein Zitat oder Tipp, unten CTA-Button in Kontrastfarbe.',
+  'li-banner': 'LinkedIn-Banner: Canva → „LinkedIn Banner" → 1584×396 px → Links dein Name + Claim, rechts ein Markenelement oder Foto. Hintergrund in deiner Hauptfarbe.',
+  'li-card':   'LinkedIn Bio-Card: Canva → „LinkedIn Post" → Steckbrief-Format: Foto links, Name + Rolle + 3 Bulletpoints rechts. Ideal für „Über mich"-Posts.',
+  'quote-post':'Zitat-Post: Canva → „Instagram Post" → Hochkant 4:5 → Zitat in Display-Schrift groß (2–3 Zeilen), dein Name klein darunter, minimaler Hintergrund.'
+};
+
+// Season data
+const SEASONS={
+  fruehling:{
+    label:'🌸 Frühlingstyp',badge:'#F9A8D4',badgeText:'#5a1a3a',
+    text:'Dein Farbtyp: Frühling. Warme, helle und klare Farben bringen dein natürliches Leuchten heraus. Du wirkst auf Fotos am strahlendsten in Pfirsich-, Korallen- und warmen Grüntönen.',
+    yes:[{h:'#F4A460',n:'Pfirsich'},{h:'#FF7F7F',n:'Koralle'},{h:'#90EE90',n:'Mintgrün'},{h:'#FFD700',n:'Goldgelb'},{h:'#FFA07A',n:'Lachs'},{h:'#98FB98',n:'Hellgrün'}],
+    no: [{h:'#708090',n:'Kaltgrau'},{h:'#000033',n:'Marineblau'},{h:'#4B0082',n:'Indigo'},{h:'#2F4F4F',n:'Dunkelgrün'}],
+    tip:'Als Frühlingstyp passen Terracotta und warme Erdtöne perfekt zu deinem Teint – auf Fotos wirkst du damit authentisch und strahlend. Ideal für deine Brand-Shoots.'
+  },
+  sommer:{
+    label:'🌊 Sommertyp',badge:'#BAE6FD',badgeText:'#0c3d5c',
+    text:'Dein Farbtyp: Sommer. Du hast kühle, weiche Untertöne. Pudrige, gedämpfte und kühle Farben harmonieren am besten mit deiner natürlichen Ausstrahlung.',
+    yes:[{h:'#B0C4DE',n:'Stahlblau'},{h:'#DDA0DD',n:'Pflaume'},{h:'#F4B6C2',n:'Altrosa'},{h:'#C1FFC1',n:'Eisgrün'},{h:'#E0E0E0',n:'Silbergrau'},{h:'#B19CD9',n:'Lavendel'}],
+    no: [{h:'#FF6B00',n:'Orange'},{h:'#8B4513',n:'Sattelbraun'},{h:'#FFD700',n:'Goldgelb'},{h:'#FF4500',n:'Orangerot'}],
+    tip:'Als Sommertyp: Kühle Sage-Grün- und Lavendeltöne in deinem Brand-Auftritt sorgen für eine elegante Harmonie mit deinem Teint auf Fotos.'
+  },
+  herbst:{
+    label:'🍂 Herbsttyp',badge:'#FED7AA',badgeText:'#7c2d12',
+    text:'Dein Farbtyp: Herbst. Dein Teint hat warme, goldene oder kupferne Untertöne. Erdige, satte Farben lassen dich strahlen und wirken dabei absolut stimmig.',
+    yes:[{h:'#B45309',n:'Rostbraun'},{h:'#D97706',n:'Bernstein'},{h:'#78350F',n:'Kakao'},{h:'#4D7C0F',n:'Moosgrün'},{h:'#92400E',n:'Kupfer'},{h:'#B5651D',n:'Schokolade'}],
+    no: [{h:'#FF1493',n:'Pink'},{h:'#000080',n:'Marineblau'},{h:'#808080',n:'Kaltgrau'},{h:'#E0E0E0',n:'Eisweiß'}],
+    tip:'Als Herbsttyp sind Terracotta und Brauntöne in deiner Marke nahezu perfekt – du wirkst damit auf Brand-Fotos kraftvoll, geerdet und absolut authentisch.'
+  },
+  winter:{
+    label:'❄️ Wintertyp',badge:'#E0E7FF',badgeText:'#1e1b4b',
+    text:'Dein Farbtyp: Winter. Du hast einen klaren Kontrast und kühle Untertöne. Intensive, klare Farben sowie Schwarz-Weiß-Kontraste bringen dich am stärksten zur Geltung.',
+    yes:[{h:'#FFFFFF',n:'Reinweiß'},{h:'#000000',n:'Schwarz'},{h:'#DC143C',n:'Rubinrot'},{h:'#4169E1',n:'Royalblau'},{h:'#8B008B',n:'Violett'},{h:'#00CED1',n:'Türkis'}],
+    no: [{h:'#F5DEB3',n:'Beige'},{h:'#D2B48C',n:'Camel'},{h:'#F0E68C',n:'Khaki'},{h:'#C8A96E',n:'Goldbraun'}],
+    tip:'Als Wintertyp: Starke Kontraste in deinem Brand (Dunkelbraun + Weiß oder Schwarz + Terracotta) wirken auf Fotos prägnant und unvergesslich.'
+  }
+};
+
+function getSeason(skin,hair,eyes){
+  const deepSkin=['dunkel','sehr dunkel'].includes(skin);
+  const warmSkin=['olivfarben','mittel','hell'].includes(skin);
+  const lightSkin=['sehr hell','hell'].includes(skin);
+  if(deepSkin) return 'winter';
+  if(hair==='rot') return 'herbst';
+  if(warmSkin&&['braun','schwarz'].includes(hair)) return 'herbst';
+  if(['blau/grau'].includes(eyes)&&lightSkin) return 'sommer';
+  if(['grün/haselnuss'].includes(eyes)&&warmSkin) return 'herbst';
+  return 'fruehling';
+}
+
+// ════════════════════════════════
+//  GENERATE
+// ════════════════════════════════
+const MSGS=['Positionierung wird geschärft …','Brand Statement formuliert …','Farbpalette wird abgestimmt …','Templates werden erstellt …','Stilberatung berechnet …'];
+let mi=0,mt=null;
+
+async function generate(){
+  go('load');
+  mi=0;document.getElementById('load-msg').textContent=MSGS[0];
+  mt=setInterval(()=>{mi=(mi+1)%MSGS.length;document.getElementById('load-msg').textContent=MSGS[mi];},2300);
+  try{
+    const data=await callAPI();
+    clearInterval(mt);
+    render(data);
+    go('res');
+  }catch(e){
+    clearInterval(mt);
+    console.error(e);
+    render(buildFallback());
+    go('res');
+  }
+}
+
+async function callAPI(){
+  // Build messages array
+  const msgs=[];
+  const aest=A.aesthetic||'warm-earthy';
+
+  if(photoB64){
+    // With photo: ask Claude to analyse the photo AND generate brand content
+    msgs.push({role:'user',content:[
+      {type:'image',source:{type:'base64',media_type:'image/jpeg',data:photoB64}},
+      {type:'text',text:`Du bist Brand-Strategin und Farbtypberaterin. Analysiere dieses Foto einer Person und erstelle gleichzeitig einen vollständigen Personal-Brand-Kern.
+
+BRAND-DATEN:
+Name: ${A.name}
+Rolle: ${A.role}
+Zielgruppe: ${A.audience}
+Transformation: ${A.transformation}
+Stil: ${A.style}
+Geschichte: ${A.story}
+Einzigartigkeit: ${A.unique}
+Ästhetik: ${aest}
+
+WICHTIG: Formuliere alle Texte eigenständig und kreativ. Keine wörtlichen Wiederholungen. Korrekte deutsche Großschreibung.
+
+Antworte AUSSCHLIESSLICH als JSON ohne Markdown:
+{
+  "positioning": "Prägnanter Positionierungssatz, max. 20 Wörter, beginnt NICHT mit dem Namen",
+  "statement": "3-4-Satz-Brand-Statement, beginnt mit Vornamen, persönlich und konkret",
+  "logo_wordmark": "2-3 Wörter als kreative Wortmarke",
+  "logo_claim": "Kurzer Claim, 5-8 Wörter",
+  "palette_desc": "Ein Satz warum diese Farben passen, max. 20 Wörter",
+  "font_desc": "Ein Satz warum diese Schriften passen, max. 20 Wörter",
+  "content_ideas": ["Idee 1","Idee 2","Idee 3","Idee 4","Idee 5"],
+  "photo_skin": "Beschreibe den Hautton in 2-3 Wörtern",
+  "photo_hair": "Haarfarbe in 2-3 Wörtern",
+  "photo_eyes": "Augenfarbe in 2-3 Wörtern",
+  "photo_season": "fruehling oder sommer oder herbst oder winter",
+  "photo_summary": "Ein Satz: Welcher Farbtyp und warum (max. 20 Wörter)"
+}`}
+    ]});
+  } else {
+    msgs.push({role:'user',content:`Du bist Brand-Strategin. Erstelle einen vollständigen Personal-Brand-Kern.
+
+BRAND-DATEN:
+Name: ${A.name}
+Rolle: ${A.role}
+Zielgruppe: ${A.audience}
+Transformation: ${A.transformation}
+Stil: ${A.style}
+Geschichte: ${A.story}
+Einzigartigkeit: ${A.unique}
+Ästhetik: ${aest}
+
+WICHTIG: Formuliere alle Texte eigenständig und kreativ. Keine wörtlichen Wiederholungen aus den Eingaben. Korrekte deutsche Rechtschreibung und Großschreibung überall.
+
+Antworte AUSSCHLIESSLICH als JSON ohne Markdown:
+{
+  "positioning": "Prägnanter Positionierungssatz max. 20 Wörter, beginnt NICHT mit dem Namen, mutig und spezifisch",
+  "statement": "3-4-Satz-Brand-Statement, beginnt mit Vornamen, persönlich und konkret, ohne Floskeln",
+  "logo_wordmark": "2-3 Wörter kreative Wortmarke",
+  "logo_claim": "Kurzer Claim 5-8 Wörter",
+  "palette_desc": "Ein Satz warum diese Farben passen, max. 20 Wörter",
+  "font_desc": "Ein Satz warum diese Schriften passen, max. 20 Wörter",
+  "content_ideas": ["Idee 1","Idee 2","Idee 3","Idee 4","Idee 5"]
+}`});
+  }
+
+  const res=await fetch('/api/claude',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1200,messages:msgs})
+  });
+  if(!res.ok) throw new Error('HTTP '+res.status);
+  const d=await res.json();
+  const raw=d.content.map(i=>i.text||'').join('');
+  return JSON.parse(raw.replace(/```json|```/g,'').trim());
+}
+
+function buildFallback(){
+  return{
+    positioning:`Wenn Wissen auf Mut trifft – ${A.role} für Menschen, die mehr aus sich machen wollen.`,
+    statement:`${A.name} – ${A.role}.\n\nIch zeige dir, wie du aufhörst, dein Wissen zu verschenken, und anfängst, damit wirklich Geld zu verdienen.\n\nNicht als Version von jemand anderem. Sondern als die, die du bereits bist.`,
+    logo_wordmark:A.name+' Studio',
+    logo_claim:'Wissen wird zu Einkommen.',
+    palette_desc:'Diese Farben verbinden Wärme, Verlässlichkeit und feminine Stärke.',
+    font_desc:'Serifen für Tiefe, Sans-Serif für Klarheit – ein klassisch-modernes Duo.',
+    content_ideas:['Warum dein Wissen mehr wert ist, als du glaubst','3 Fehler beim Positionieren – und wie du sie vermeidest','Meine Geschichte: Wie ich aus Erfahrung ein Business baute','Was Sichtbarkeit wirklich bedeutet','Das erste Angebot: Wie klein darf es sein?']
+  };
+}
+
+// ════════════════════════════════
+//  RENDER
+// ════════════════════════════════
+function render(data){
+  const aest=A.aesthetic||'warm-earthy';
+  const pal=PALS[aest];
+  const fnt=FNTS[aest];
+
+  document.getElementById('r-name').textContent=A.name||'–';
+  document.getElementById('r-pos').textContent=data.positioning||'–';
+  document.getElementById('r-stmt').innerHTML=(data.statement||'–').replace(/\n/g,'<br>');
+
+  // Palette
+  document.getElementById('r-pal').innerHTML=pal.map(c=>`
+    <div class="cc-chip">
+      <div class="csw" style="background:${c.h}" onclick="cp('${c.h}')" title="${c.h}"></div>
+      <div class="chx">${c.h}</div><div class="cnm">${c.n}</div>
+    </div>`).join('');
+  document.getElementById('r-pal-desc').textContent=data.palette_desc||'';
+
+  // Fonts
+  document.getElementById('r-fonts').innerHTML=`
+    <div class="fc"><div class="fr">Display / Überschrift</div><div class="fn">${fnt.d}</div><div class="fs" style="font-family:'${fnt.d}',serif;">Aa</div></div>
+    <div class="fc"><div class="fr">Fließtext / Body</div><div class="fn">${fnt.b}</div><div class="fs" style="font-family:'${fnt.b}',sans-serif;">Aa</div></div>`;
+  document.getElementById('r-font-desc').textContent=data.font_desc||'';
+
+  // Logo
+  const wm=data.logo_wordmark||A.name;
+  const cl=data.logo_claim||'';
+  document.getElementById('r-logo').innerHTML=
+    `<div style="font-family:'Playfair Display',serif;font-size:clamp(18px,5vw,26px);font-weight:700;color:var(--dark);">${wm}</div>`+
+    (cl?`<div style="font-family:'Inter',sans-serif;font-size:11px;letter-spacing:3px;color:var(--sage);text-transform:uppercase;margin-top:6px;font-weight:600;">${cl}</div>`:'');
+  document.getElementById('r-logo-desc').textContent='Umsetzbar in Terracotta auf Cream oder als invertierte Dark-Version.';
+
+  // Templates
+  renderTemplates(pal,A.name||'NAME',data.logo_claim||'Dein Claim');
+
+  // Content
+  document.getElementById('r-content').innerHTML=(data.content_ideas||[]).map(i=>
+    `<div class="idea"><span class="ia">→</span>${i}</div>`).join('');
+
+  // Style block
+  let season=null;
+  if(data.photo_season){
+    season=data.photo_season;
+    // Show photo thumb
+    const blk=document.getElementById('r-style-block');
+    blk.style.display='block';
+    const pr=document.getElementById('r-photo-result');
+    pr.style.display='block';
+    const thumb=document.getElementById('r-photo-thumb');
+    if(photoB64) thumb.src='data:image/jpeg;base64,'+photoB64;
+    document.getElementById('r-photo-detected').textContent=SEASONS[season]?.label||season;
+    document.getElementById('r-photo-sub').textContent=data.photo_summary||'';
+  }
+  if(season&&SEASONS[season]){
+    renderSeason(season);
+  } else if(!data.photo_season&&A.skin){
+    season=getSeason(A.skin,A.hair,A.eyes);
+    document.getElementById('r-style-block').style.display='block';
+    renderSeason(season);
+  }
+}
+
+function renderSeason(key){
+  const s=SEASONS[key];
+  if(!s)return;
+  document.getElementById('r-season-badge').innerHTML=
+    `<div class="sb-badge" style="background:${s.badge};color:${s.badgeText};">${s.label}</div>`;
+  document.getElementById('r-style-text').textContent=s.text;
+  document.getElementById('r-outfit-yes').innerHTML=s.yes.map(c=>`
+    <div class="outfit-chip">
+      <div class="outfit-swatch" style="background:${c.h}" onclick="cp('${c.h}')" title="${c.h}"></div>
+      <div class="outfit-name">${c.n}</div>
+    </div>`).join('');
+  document.getElementById('r-outfit-no').innerHTML=s.no.map(c=>`
+    <div class="avoid-chip">
+      <div class="outfit-swatch" style="background:${c.h};position:relative;">
+        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:20px;">✕</div>
+      </div>
+      <div class="avoid-label">${c.n}</div>
+    </div>`).join('');
+  document.getElementById('r-style-tip').textContent=s.tip;
+}
+
+// ════════════════════════════════
+//  TEMPLATES (SVG on Canvas)
+// ════════════════════════════════
+function renderTemplates(pal,name,claim){
+  const grid=document.getElementById('r-tpl');
+  grid.innerHTML='';
+  const c1=pal[0].h, c2=pal[1].h, c3=pal[2].h, c4=pal[3].h, c5=pal[4].h;
+
+  const templates=[
+    // 1: Instagram Post
+    ()=>{
+      const cv=mk(300,300);const cx=cv.getContext('2d');
+      cx.fillStyle=c3;cx.fillRect(0,0,300,300);
+      cx.fillStyle=c1;cx.fillRect(0,220,300,80);
+      cx.fillStyle=c5;cx.font='bold 15px serif';cx.textAlign='center';
+      cx.fillText(name.toUpperCase(),150,250);
+      cx.fillStyle=c3;cx.font='11px sans-serif';
+      cx.fillText(claim,150,272);
+      cx.fillStyle=c1+'33';cx.beginPath();cx.arc(150,105,60,0,Math.PI*2);cx.fill();
+      cx.fillStyle=c4;cx.font='bold 28px serif';cx.fillStyle=c4;
+      cx.fillText('✦',150,118);
+      label(cv,cx,'Instagram Post 1:1',c5,'rgba(0,0,0,.4)');
+      return cv;
+    },
+    // 2: Instagram Story
+    ()=>{
+      const cv=mk(180,320);const cx=cv.getContext('2d');
+      cx.fillStyle=c5;cx.fillRect(0,0,180,320);
+      cx.fillStyle=c1;cx.fillRect(0,0,180,6);
+      cx.fillStyle=c1;cx.font='bold 13px serif';cx.textAlign='center';
+      cx.fillText(name,90,40);
+      cx.fillStyle=c3;cx.font='10px sans-serif';cx.fillText(claim,90,58);
+      cx.fillStyle=c2+'55';cx.beginPath();cx.arc(90,160,55,0,Math.PI*2);cx.fill();
+      cx.fillStyle=c1;cx.font='bold 22px serif';cx.fillText('✦',90,168);
+      cx.fillStyle=c3;cx.fillRect(30,265,120,34);
+      cx.fillStyle=c5;cx.font='bold 11px sans-serif';cx.fillText('JETZT ENTDECKEN',90,287);
+      label(cv,cx,'Instagram Story',c5,'rgba(0,0,0,.35)');
+      return cv;
+    },
+    // 3: LinkedIn Banner
+    ()=>{
+      const cv=mk(300,100);const cx=cv.getContext('2d');
+      cx.fillStyle=c5;cx.fillRect(0,0,300,100);
+      const g=cx.createLinearGradient(0,0,300,0);
+      g.addColorStop(0,c1+'cc');g.addColorStop(1,'transparent');
+      cx.fillStyle=g;cx.fillRect(0,0,300,100);
+      cx.fillStyle='#fff';cx.font='bold 16px serif';cx.textAlign='left';
+      cx.fillText(name,20,40);
+      cx.fillStyle='rgba(255,255,255,.75)';cx.font='10px sans-serif';
+      cx.fillText(claim,20,60);
+      cx.fillStyle=c3+'aa';cx.fillRect(210,20,80,60);
+      cx.fillStyle=c1;cx.font='24px serif';cx.textAlign='center';cx.fillText('✦',250,57);
+      label(cv,cx,'LinkedIn Banner',c5,'rgba(0,0,0,.4)');
+      return cv;
+    },
+    // 4: LinkedIn Bio-Card
+    ()=>{
+      const cv=mk(300,170);const cx=cv.getContext('2d');
+      cx.fillStyle='#fff';cx.fillRect(0,0,300,170);
+      cx.fillStyle=c1;cx.fillRect(0,0,4,170);
+      cx.fillStyle=c1+'22';cx.fillRect(0,0,300,4);
+      cx.fillStyle=c3+'44';cx.beginPath();cx.arc(50,85,40,0,Math.PI*2);cx.fill();
+      cx.fillStyle=c1;cx.font='18px serif';cx.textAlign='center';cx.fillText('✦',50,92);
+      cx.fillStyle=c5;cx.font='bold 13px serif';cx.textAlign='left';cx.fillText(name,105,45);
+      cx.fillStyle=c2;cx.font='10px sans-serif';cx.fillText(claim,105,63);
+      [1,2,3].forEach((i,idx)=>{
+        cx.fillStyle=c1;cx.fillRect(105,80+idx*24,3,14);
+        cx.fillStyle='#555';cx.font='10px sans-serif';
+        cx.fillText(['Positionierung','Sichtbarkeit','Einkommen'][idx],114,93+idx*24);
+      });
+      label(cv,cx,'LinkedIn Bio-Card',c5,'rgba(0,0,0,.3)');
+      return cv;
+    },
+    // 5: Zitat-Post
+    ()=>{
+      const cv=mk(240,300);const cx=cv.getContext('2d');
+      cx.fillStyle=c3;cx.fillRect(0,0,240,300);
+      cx.fillStyle=c1+'33';cx.fillRect(20,20,200,260);
+      cx.fillStyle=c1;cx.font='bold 44px serif';cx.textAlign='left';cx.fillText('"',32,80);
+      cx.fillStyle=c5;cx.font='bold 14px serif';cx.textAlign='center';
+      wrapText(cx,'Wissen wird zu Einkommen.',120,115,180,20);
+      cx.fillStyle=c2;cx.fillRect(90,220,60,2);
+      cx.fillStyle=c5;cx.font='11px sans-serif';cx.textAlign='center';cx.fillText('– '+name,120,242);
+      label(cv,cx,'Zitat-Post 4:5',c5,'rgba(0,0,0,.35)');
+      return cv;
+    }
+  ];
+
+  templates.forEach((fn,i)=>{
+    const cv=fn();
+    const info=TPL_INFO[i];
+    const wrap=document.createElement('div');
+    wrap.className='tpl-card';
+    wrap.title=info.label;
+    wrap.onclick=()=>showTplHint(i);
+    wrap.appendChild(cv);
+    grid.appendChild(wrap);
+  });
+}
+
+function mk(w,h){const c=document.createElement('canvas');c.width=w;c.height=h;c.className='tpl-canvas';return c;}
+function label(cv,cx,txt,bg,fg){
+  cx.fillStyle='rgba(0,0,0,.45)';cx.fillRect(0,cv.height-28,cv.width,28);
+  cx.fillStyle='rgba(255,255,255,.9)';cx.font='bold 10px sans-serif';cx.textAlign='center';
+  cx.fillText(txt,cv.width/2,cv.height-11);
+}
+function wrapText(cx,text,x,y,maxW,lineH){
+  const words=text.split(' ');let line='';
+  words.forEach(w=>{
+    const test=line+w+' ';
+    if(cx.measureText(test).width>maxW&&line){cx.fillText(line,x,y);line=w+' ';y+=lineH;}
+    else line=test;
+  });
+  cx.fillText(line,x,y);
+}
+
+let lastTplIdx=-1;
+function showTplHint(i){
+  const hint=document.getElementById('r-tpl-hint');
+  const info=TPL_INFO[i];
+  if(lastTplIdx===i){hint.style.display='none';lastTplIdx=-1;return;}
+  hint.style.display='block';
+  hint.innerHTML=`<strong>${info.label} · ${info.platform}</strong><br>${TPL_CANVA[info.id]}`;
+  lastTplIdx=i;
+  hint.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+// ════════════════════════════════
+//  UTILS
+// ════════════════════════════════
+function copyEl(id){cp(document.getElementById(id).innerText);}
+function cp(txt){
+  navigator.clipboard.writeText(txt).catch(()=>{});
+  const t=document.getElementById('toast');
+  t.textContent='✓ Kopiert!';t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),1800);
+}
+function restart(){
+  Object.keys(A).forEach(k=>delete A[k]);
+  photoB64=null;
+  document.querySelectorAll('textarea,input[type=text]').forEach(el=>el.value='');
+  document.querySelectorAll('.cc.on').forEach(el=>el.classList.remove('on'));
+  document.querySelectorAll('.sw.on').forEach(el=>el.classList.remove('on'));
+  const area=document.getElementById('upload-area');
+  area.classList.remove('has-img');
+  document.querySelector('#upload-area .upload-icon').textContent='📸';
+  document.querySelector('#upload-area .upload-title').textContent='Foto auswählen oder ablegen';
+  document.getElementById('upload-preview').style.display='none';
+  const btn=document.getElementById('btn-analyze');
+  btn.disabled=true;
+  btn.textContent='✦ Brand-Kern erstellen';
+  go(0);
+}
+</script>
+</body>
+</html>
